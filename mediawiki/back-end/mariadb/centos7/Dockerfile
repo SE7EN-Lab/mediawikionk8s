@@ -1,6 +1,5 @@
 FROM centos:centos7
 
-MAINTAINER The CentOS Project <cloud-ops@centos.org>
 LABEL Vendor="CentOS"
 LABEL License=GPLv2
 LABEL Version=5.5.41
