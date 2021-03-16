@@ -1,0 +1,45 @@
+docker mariadb:
+ docker run --name=mydb -d -p 3306:3306 -v /tmp/lib/mysql:/var/lib/mysql \
+	-e MYSQL_ROOT_PASSWORD=root \
+	-e MYSQL_DATABASE=testdb \
+	-e MYSQL_USER=tester \
+	-e MYSQL_PASSWORD=testPwd \
+	centos/mariadb
+--------------------------------------
+base image that supports mediawiki 1.35 => centos/php-73-centos7
+https://linoxide.com/how-to-install-php-7-on-centos-7/
+----------------------------------
+On base image centos7
+yum -y update
+yum -y install wget
+yum -y install httpd httpd-tools
+yum -y install which wget
+yum -y install epel-release yum-utils
+yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+yum-config-manager --enable remi-php73
+yum -y install php php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysqlnd php-xml php-mbstring
+
+mkdir -p /home/apache; cd /home; chown -R apache:apache apache/
+cd /home/apache
+wget https://releases.wikimedia.org/mediawiki/1.35/mediawiki-1.35.1.tar.gz
+cd /var/www
+tar -zxf /home/username/mediawiki-1.35.1.tar.gz
+ln -s mediawiki-1.35.1/ mediawiki
+chown -R apache:apache /var/www/mediawiki
+chmod -R 775 /var/www/mediawiki/
+
+On /etc/httpd/conf/httpd.conf
+Updated 
+- DocumentRoot "/var/www/mediawiki"
+- <Directory "/var/www/mediawiki">
+- DirectoryIndex index.php
+
+cp LocalSettings.php /var/www/mediawiki/
+chown apache:apache LocalSettings.php
+chmod 775 LocalSettings.php
+
+/usr/sbin/httpd -DFOREGROUND
+
+
+
+
