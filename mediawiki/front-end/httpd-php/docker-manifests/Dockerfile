@@ -25,15 +25,16 @@ RUN curl -fSL "https://releases.wikimedia.org/mediawiki/${MEDIAWIKI_MAJOR_VERSIO
 # Fix permissions
     chown -R apache:apache /var/www/mediawiki/ && chmod -R 775 /var/www/mediawiki/ && \
     rm -rf mediawiki.tar.gz
+
 #Setup httpd config
 COPY httpd.conf /etc/httpd/conf/httpd.conf
 RUN chown root:root /etc/httpd/conf/httpd.conf && chmod 644 /etc/httpd/conf/httpd.conf
 
 #Local settings for PHP
-COPY LocalSettings.php /var/www/mediawiki/
-RUN chown apache:apache /var/www/mediawiki/LocalSettings.php && chmod 775 /var/www/mediawiki/LocalSettings.php
+#COPY LocalSettings.php /var/www/mediawiki/
+#RUN chown apache:apache /var/www/mediawiki/LocalSettings.php && chmod 775 /var/www/mediawiki/LocalSettings.php
+EXPOSE 80
+
 ENTRYPOINT ["/usr/sbin/httpd"]
+
 CMD ["-D", "FOREGROUND"]
-
-
-

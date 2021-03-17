@@ -10,11 +10,10 @@ base image that supports mediawiki 1.35 => centos/php-73-centos7
 https://linoxide.com/how-to-install-php-7-on-centos-7/
 ----------------------------------
 On base image centos7
-yum -y update
-yum -y install wget
+yum -y install epel-release yum-utils
 yum -y install httpd httpd-tools
 yum -y install which wget
-yum -y install epel-release yum-utils
+
 yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 yum-config-manager --enable remi-php73
 yum -y install php php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysqlnd php-xml php-mbstring
@@ -39,7 +38,27 @@ chown apache:apache LocalSettings.php
 chmod 775 LocalSettings.php
 
 /usr/sbin/httpd -DFOREGROUND
+------------------------------
+DB container
+/home/rmansing/assignments/mediawiki/back-end/mariadb/centos7# docker run -d --name=wikidb -p 3306:3306 -v /home/rmansing/db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=wikidatabase -e MYSQL_USER=wiki -e MYSQL_PASSWORD=pwd4wiki devopsworkslab/mediawiki-db:1.0
 
+Front-end container
+docker run -d --name=mediawiki-fe devopsworkslab/mediawiki-fe:1.0
 
+configmap usage:
 
-
+containers:
+        - name: wiki
+          image: mediawiki:1.27
+          ports:
+            - containerPort: 80
+              name: http
+          securityContext:
+            allowPrivilegeEscalation: true
+          volumeMounts:
+            - name: mediawikiconf
+              mountPath: /var/www/html/LocalSettings.php
+      volumes:
+        - name: mediawikiconf
+          configMap:
+            name: mediawikiconf
