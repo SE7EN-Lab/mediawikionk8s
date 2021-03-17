@@ -1,0 +1,22 @@
+---
+# Mariadb config
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-config
+  namespace: app-space
+data:
+  db-name: "wikidatabase"
+  db-user: "wiki"
+---
+# Mariadb secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mariadb-cred
+  namespace: app-space
+type: Opaque
+data:
+  db-root-pwd: pwd4root
+  db-user-pwd: pwd4wiki
+

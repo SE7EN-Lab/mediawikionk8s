@@ -6,7 +6,6 @@ docker mariadb:
 	-e MYSQL_PASSWORD=testPwd \
 	centos/mariadb
 --------------------------------------
-base image that supports mediawiki 1.35 => centos/php-73-centos7
 https://linoxide.com/how-to-install-php-7-on-centos-7/
 ----------------------------------
 On base image centos7
@@ -40,7 +39,8 @@ chmod 775 LocalSettings.php
 /usr/sbin/httpd -DFOREGROUND
 ------------------------------
 DB container
-/home/rmansing/assignments/mediawiki/back-end/mariadb/centos7# docker run -d --name=wikidb -p 3306:3306 -v /home/rmansing/db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=wikidatabase -e MYSQL_USER=wiki -e MYSQL_PASSWORD=pwd4wiki devopsworkslab/mediawiki-db:1.0
+
+docker run -d --name=wikidb -p 3306:3306 -v /home/rmansing/db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=wikidatabase -e MYSQL_USER=wiki -e MYSQL_PASSWORD=pwd4wiki devopsworkslab/mariadb55:1.0
 
 Front-end container
 docker run -d --name=mediawiki-fe devopsworkslab/mediawiki-fe:1.0
@@ -62,3 +62,12 @@ containers:
         - name: mediawikiconf
           configMap:
             name: mediawikiconf
+----------------------------------------
+role, rolebinding
+service account
+deployment - frontend
+service - frontend/backend
+pv, pvc - hostPath - frontend/backend
+secrets - dockerimagepull secret
+configMap - frontend/backend
+statefulset - backend

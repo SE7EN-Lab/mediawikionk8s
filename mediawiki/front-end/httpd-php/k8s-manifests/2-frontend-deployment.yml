@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end
+  namespace: app-space
+  labels:
+    app: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mediawiki
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      containers:
+      imagePullSecrets:
+      - name: dwlabs-cred
+      - name: mediawiki
+        image: devopsworkslab/mediawiki-fe:1.0
+        command: ["-D", "FOREGROUND"] #To be confirmed
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: php-config
+            mountPath: /var/www/mediawiki/LocalSettings.php
+          - name: mediawiki-data
+            mountPath: /var/www/mediawiki/images
+  volumes:
+    - name: php-config
+      configMap:
+        name: mediawiki-php-config
+    - name: mediawiki-data
+      persistentVolumeClaim:
+        claimName: local-pvc-fe

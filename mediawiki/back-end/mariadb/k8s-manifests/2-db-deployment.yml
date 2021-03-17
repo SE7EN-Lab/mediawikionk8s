@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: back-end
+  namespace: app-space
+  labels:
+    app: backend
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  serviceName: "back-end-svc"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      imagePullSecrets:
+      - name: dwlabs-cred
+      - name: mariadb
+        image: devopsworkslab/mariadb55:1.0
+        command: ["mysqld_safe"] # To be confirmed
+        env:
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapkeyRef: 
+                name: mariadb-config
+                key: db-name
+          - name: MYSQL_USER
+            valueFrom:
+              configMapkeyRef:
+                name: mariadb-config
+                key: db-user
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-cred
+                key: db-root-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-cred
+                key: db-user-pwd
+        ports:
+        - containerPort: 3306
+          name: db-port
+        volumeMounts:
+        - name: mariadb-data
+          mountPath: /var/lib/mysql
+  volumes:
+    - name: mariadb-data
+      persistentVolumeClaim:
+        claimName: local-pvc

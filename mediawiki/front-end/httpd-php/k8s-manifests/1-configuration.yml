@@ -1,0 +1,5 @@
+# Mediawiki config
+kubectl create configmap mediawiki-php-config --namespace=app-space --from-file LocalSettings.php --dry-run=client -o yaml
+  
+
+

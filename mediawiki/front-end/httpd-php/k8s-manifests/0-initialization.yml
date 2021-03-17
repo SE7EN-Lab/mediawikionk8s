@@ -1,0 +1,75 @@
+---
+# Namespace creation
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-space
+---  
+# Role creation
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: app-space
+  name: adm-app-space
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["get", "watch", "list", "create"]
+---
+# Service account creation
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yoda
+  namespace: app-space
+---
+# Role binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: adm-app-space-binding
+  namespace: app-space
+subjects:
+- kind: ServiceAccount
+  name: system:app-space:yoda
+  namespace: app-space
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: adm-app-space
+  apiGroup: rbac.authorization.k8s.io
+---
+# Docker Private registry secret
+kubectl create secret docker-registry dwlabs-cred --namespace=app-space --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email> --dry-run=client -o yaml
+---
+#Provision volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-fe
+  namespace: app-space
+  labels:
+    type: local
+spec:
+  storageClassName: manual 
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce 
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/home/rmansing/fe"
+---
+# Configure persistent volume claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc-fe
+  namespace: app-space
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
