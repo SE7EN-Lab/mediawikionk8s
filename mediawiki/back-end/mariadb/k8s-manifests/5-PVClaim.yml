@@ -1,0 +1,13 @@
+# Configure persistent volume claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-pvc
+  namespace: default
+spec:
+  storageClassName: "cloud"
+  accessMode:
+    -   ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

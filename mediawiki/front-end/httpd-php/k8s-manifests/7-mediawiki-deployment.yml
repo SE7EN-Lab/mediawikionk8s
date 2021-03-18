@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: front-end
-  namespace: app-space
   labels:
     app: frontend
 spec:
@@ -15,12 +14,12 @@ spec:
       labels:
         app: mediawiki
     spec:
+      ServiceAccount: yoda
       containers:
-      imagePullSecrets:
-      - name: dwlabs-cred
       - name: mediawiki
         image: devopsworkslab/mediawiki-fe:1.0
-        command: ["-D", "FOREGROUND"] #To be confirmed
+        command: ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         volumeMounts:
@@ -28,10 +27,10 @@ spec:
             mountPath: /var/www/mediawiki/LocalSettings.php
           - name: mediawiki-data
             mountPath: /var/www/mediawiki/images
-  volumes:
-    - name: php-config
-      configMap:
-        name: mediawiki-php-config
-    - name: mediawiki-data
-      persistentVolumeClaim:
-        claimName: local-pvc-fe
+      volumes:
+        - name: php-config
+          configMap:
+            name: mediawiki-php-config
+        - name: mediawiki-data
+          persistentVolumeClaim:
+            claimName: frontend-pvc

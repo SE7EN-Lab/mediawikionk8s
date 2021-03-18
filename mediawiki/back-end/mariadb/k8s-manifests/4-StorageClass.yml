@@ -1,0 +1,10 @@
+# Provision storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cloud
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: io2
+  iopsPerGB: "10"
+  fsType: ext4
