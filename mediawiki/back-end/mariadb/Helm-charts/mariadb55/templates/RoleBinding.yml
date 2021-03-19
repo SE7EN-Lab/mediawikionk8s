@@ -2,10 +2,10 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: bdm-default-yoda
+  name: adm-default-yoda
 subjects:
 - kind: ServiceAccount
-  name: zoda
+  name: yoda
   namespace: default
   apiGroup: ""
 roleRef:

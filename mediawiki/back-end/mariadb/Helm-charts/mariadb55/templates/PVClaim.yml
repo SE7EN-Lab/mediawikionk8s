@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: frontend-pvc
+  name: backend-pvc
   namespace: default
 spec:
-  storageClassName: "cloudfe"
+  storageClassName: "cloud"
   accessModes:
     -   ReadWriteOnce
   resources:
