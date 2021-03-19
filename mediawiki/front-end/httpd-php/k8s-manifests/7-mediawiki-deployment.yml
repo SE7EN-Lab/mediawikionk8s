@@ -14,7 +14,7 @@ spec:
       labels:
         app: mediawiki
     spec:
-      ServiceAccount: yoda
+      serviceAccountName: yoda
       containers:
       - name: mediawiki
         image: devopsworkslab/mediawiki-fe:1.0
