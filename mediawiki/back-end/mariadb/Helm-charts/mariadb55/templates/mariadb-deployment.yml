@@ -17,7 +17,7 @@ spec:
       serviceAccountName: yoda
       containers:
       - name: mariadb
-        image: devopsworkslab/mariadb55:2.0
+        image: devopsworkslab/mariadb55:1.0
         command: ["/docker-entrypoint.sh", "mysqld_safe"]
         imagePullPolicy: Always
         env:

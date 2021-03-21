@@ -14,7 +14,10 @@ Order of deployment
 
 - Post-deployment:
     - Line #40 of ConfigMap "mediawiki-php-config" must be updated to point to External IP of the Loadbalancer.
-
+    - Mediawiki Application can be reached at 
+    ```
+    http:\\<EXTERNAL-IP-OF-LB>:8080
+    ```
 - Limitation:
     - Mariadb deployment isn't scalable due to race condition on Persistent volume usage. Requires statefulset deployment of Mariadb.
 
