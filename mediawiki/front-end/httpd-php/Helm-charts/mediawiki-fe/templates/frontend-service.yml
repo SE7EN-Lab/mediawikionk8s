@@ -5,7 +5,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: frontend
+    app: mediawiki
   ports:
     - port: 8080
       protocol: TCP

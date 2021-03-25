@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end
+  labels:
+    app: frontend
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: mediawiki
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      serviceAccountName: zoda
+      containers:
+      - name: mediawiki
+        image: devopsworkslab/mediawiki-fe:1.0
+        command: ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+        imagePullPolicy: Always
+        env:
+         - name: MEDIAWIKI_DATABASE_NAME
+           valueFrom:
+             configMapKeyRef:
+               name: mariadb-config
+               key: db-name
+         - name: MEDIAWIKI_DATABASE_USER
+           valueFrom:
+             configMapKeyRef:
+               name: mariadb-config
+               key: db-user
+         - name: MEDIAWIKI_DATABASE_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: mariadb-cred
+               key: db-user-pwd
+        ports:
+        - containerPort: 80
+        volumeMounts:
+         # - name: php-config
+         #   mountPath: /var/www/mediawiki/LocalSettings.php
+         #   subPath: LocalSettings.php
+          - name: mediawiki-data
+            mountPath: /var/www/mediawiki/images
+      volumes:
+        #- name: php-config
+        #  configMap:
+        #    name: mediawiki-php-config
+        - name: mediawiki-data
+          persistentVolumeClaim:
+            claimName: frontend-pvc

@@ -10,30 +10,46 @@ Tech Spec:
     - PHP: v7.3
 
 - Pre-requisite:
-    - Requires storage infrastructure on AWS to be provisioned to support Dynamic PV provisioning.
-    - Requires External Load Balancer on AWS to be provisioned.
-    - Cluster must be configured to launch External LoadBalancer on AWS.
+    - minikube v1.17.1
+    - Local host volume infrastructure provisioned.
     - Make sure Helm charts are packaged under Helm-charts directories.
 
 Order of deployment
 -------------------
+1. Start minikube
+    ```
+    minikube start --host-only-cidr 192.168.99.1/24
+    ```
+2. Provision local host volume directories on minikube VM
+    ```
+    minikube ssh
 
-1. Deploy back-end helm chart
+    sudo mkdir -p /var/lib/mysql
+    sudo chmod -R 777 /var/lib/mysql
+    sudo mkdir -p /var/www/mediawiki/images
+    sudo chmod -R 777 /var/www/mediawiki/images
+    ls -ltr /var/lib/mysql /var/www/mediawiki/images
+    exit
+    ```
+3. Deploy back-end helm chart
     ```
     helm install mariadb ./back-end/mariadb/Helm-charts/mariadb55-0.1.0.tgz
     ```
-2. Deploy front-end chart
+4. Deploy front-end chart
     ``` 
     helm install mediawiki-fe ./front-end/httpd-php/Helm-charts/mediawiki-fe-0.1.0.tgz
     ```
-
-- Mediawiki Application can be reached at 
+5. Expose Front-end service. From a seperate terminal window.
+    ```
+    minikube tunnel --cleanup
+    ```
+6. Mediawiki Application can be reached at 
     ```
     http://<EXTERNAL-IP-OF-LB>:8080
     ```
-- Post-deployment:(One time action)
+7. Post-deployment: (One time action)
     - After completion of initial setup on Web - Download LocalSettings.php file.
-        - Front-end deployment to be updated to add the following definition for mounting LocalSettings.php
+    - Front-end deployment to be updated to add the following definition for mounting LocalSettings.php
         - .spec.volumeMounts.php-config
         ```
         volumeMounts:
@@ -52,7 +68,5 @@ Order of deployment
 
 
 - Limitation:
-    - Mariadb deployment isn't scalable due to race condition on Persistent volume usage. Requires statefulset deployment of Mariadb.
-
-
+    - Mariadb deployment isn't scalable due to race condition on Persistent volume usage. Requires statefulset deployment of Mariadb.                                                                                                                                    
 Note: Solution works & tested on kubernetes v1.20

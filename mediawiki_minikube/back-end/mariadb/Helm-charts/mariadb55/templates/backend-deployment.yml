@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back-end
+  labels:
+    app: backend
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      serviceAccountName: yoda
+      containers:
+      - name: mariadb
+        image: devopsworkslab/mariadb55:1.0
+        command: ["/docker-entrypoint.sh", "mysqld_safe"]
+        imagePullPolicy: Always
+        env:
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: mariadb-config
+                key: db-name
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: mariadb-config
+                key: db-user
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-cred
+                key: db-root-pwd
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-cred
+                key: db-user-pwd
+        ports:
+        - containerPort: 3306
+          name: db-port
+        volumeMounts:
+        - name: mariadb-data
+          mountPath: /var/lib/mysql
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: backend-pvc

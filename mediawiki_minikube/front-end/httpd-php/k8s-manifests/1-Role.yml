@@ -1,0 +1,9 @@
+# Role creation
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bdm-default
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["get", "watch", "list", "create"]
